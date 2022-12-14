@@ -1,6 +1,5 @@
 package jm.task.core.jdbc.dao;
 
-import com.mysql.cj.Session;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
@@ -11,14 +10,14 @@ import java.util.List;
 
 
 public class UserDaoJDBCImpl implements UserDao {
-    private final Connection connection = Util.getConnection();
     private String sql;
 
     public UserDaoJDBCImpl() {
 
     }
-
+    @Override
     public void createUsersTable() {
+        final Connection connection = Util.getConnection();
         sql = "CREATE TABLE IF NOT EXISTS users(" +
                 "id BIGINT NOT NULL AUTO_INCREMENT, " +
                 "name VARCHAR(30) NOT NULL, " +
@@ -38,7 +37,9 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    @Override
     public void dropUsersTable() {
+        final Connection connection = Util.getConnection();
         sql = "DROP TABLE IF EXISTS users";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
@@ -53,7 +54,9 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    @Override
     public void saveUser(String name, String lastName, byte age) {
+        final Connection connection = Util.getConnection();
         sql = "INSERT INTO users (name, lastname, age) VALUES (?, ?, ?)";
 
 
@@ -73,8 +76,9 @@ public class UserDaoJDBCImpl implements UserDao {
             }
         }
     }
-
+    @Override
     public void removeUserById(long id) {
+        final Connection connection = Util.getConnection();
         sql = "DELETE FROM `users` WHERE `id`=?";
 
 
@@ -92,8 +96,9 @@ public class UserDaoJDBCImpl implements UserDao {
             }
         }
     }
-
+    @Override
     public List<User> getAllUsers() {
+        final Connection connection = Util.getConnection();
 
         List<User> userList = new ArrayList<>();
         sql = "SELECT name, lastname, age FROM users";
@@ -121,8 +126,9 @@ public class UserDaoJDBCImpl implements UserDao {
         return userList;
 
     }
-
+    @Override
     public void cleanUsersTable() {
+        final Connection connection = Util.getConnection();
         sql = "TRUNCATE TABLE users";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
             preparedStatement.executeUpdate();
