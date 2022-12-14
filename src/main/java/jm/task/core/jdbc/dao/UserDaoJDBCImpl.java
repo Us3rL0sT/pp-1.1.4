@@ -1,31 +1,32 @@
 package jm.task.core.jdbc.dao;
 
+import com.mysql.cj.Session;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
+
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
-import static jm.task.core.jdbc.util.Util.connection;
 
 public class UserDaoJDBCImpl implements UserDao {
     private final Connection connection = Util.getConnection();
+    private String sql;
 
     public UserDaoJDBCImpl() {
 
     }
 
     public void createUsersTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS users(" +
+        sql = "CREATE TABLE IF NOT EXISTS users(" +
                 "id BIGINT NOT NULL AUTO_INCREMENT, " +
                 "name VARCHAR(30) NOT NULL, " +
                 "lastname VARCHAR(30) NOT NULL, " +
                 "age INT NOT NULL, PRIMARY KEY(id))";
-        try (Statement statement = connection.createStatement()) {
-            connection.setAutoCommit(false);
-            statement.executeUpdate(sql);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            connection.beginRequest();
+            preparedStatement.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -38,10 +39,9 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void dropUsersTable() {
-        String SQLdropTable = "DROP TABLE IF EXISTS users";
-        try (Statement statement = connection.createStatement()) {
-            connection.setAutoCommit(false);
-            statement.executeUpdate(SQLdropTable);
+        sql = "DROP TABLE IF EXISTS users";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -54,11 +54,10 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        String sql = "INSERT INTO users (name, lastname, age) VALUES (?, ?, ?)";
+        sql = "INSERT INTO users (name, lastname, age) VALUES (?, ?, ?)";
 
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            connection.setAutoCommit(false);
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
             preparedStatement.setInt(3, age);
@@ -76,11 +75,10 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void removeUserById(long id) {
-        String sql = "DELETE FROM `users` WHERE `id`=?";
+        sql = "DELETE FROM `users` WHERE `id`=?";
 
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
-            connection.setAutoCommit(false);
             preparedStatement.setLong(1, id);
 
             preparedStatement.executeUpdate();
@@ -98,10 +96,8 @@ public class UserDaoJDBCImpl implements UserDao {
     public List<User> getAllUsers() {
 
         List<User> userList = new ArrayList<>();
-
-        String sql = "SELECT name, lastname, age FROM users";
+        sql = "SELECT name, lastname, age FROM users";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            connection.setAutoCommit(false);
 
             ResultSet rs = preparedStatement.executeQuery(sql);
 
@@ -127,9 +123,8 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void cleanUsersTable() {
-        String SQLdeleteAllUser = "TRUNCATE TABLE users";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SQLdeleteAllUser)){
-            connection.setAutoCommit(false);
+        sql = "TRUNCATE TABLE users";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
             preparedStatement.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
