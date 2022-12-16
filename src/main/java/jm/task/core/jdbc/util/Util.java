@@ -12,14 +12,14 @@ public class Util {
 
 
     public static Connection getConnection() {
+        Connection connection = null;
+        try {
+            Driver driver = new com.mysql.cj.jdbc.Driver();
+            DriverManager.registerDriver(driver);
+            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 
-        if (connection == null) {
-            try {
-                connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-                connection.setAutoCommit(false);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return connection;
     }
