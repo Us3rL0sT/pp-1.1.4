@@ -12,7 +12,7 @@ public class Util {
 
 
     public static Connection getConnection() {
-        Connection connection = null;
+        connection = null;
         try {
             Driver driver = new com.mysql.cj.jdbc.Driver();
             DriverManager.registerDriver(driver);

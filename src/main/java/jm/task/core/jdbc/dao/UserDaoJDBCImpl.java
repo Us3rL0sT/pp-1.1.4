@@ -11,8 +11,6 @@ import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
     private String sql;
-    private static final Statement statement = null;
-    Connection connection = null;
 
     public UserDaoJDBCImpl() {
 
